@@ -7,6 +7,8 @@ description: Best practices for writing production Go code. Use when writing, re
 
 Battle-tested patterns from Google, Uber, and the Go team. These are practices proven in large-scale production systems, updated for modern Go (1.25).
 
+Link : https://skills.sh/saisudhir14/golang-agent-skill/golang
+
 ## Core Principles
 
 Readable code prioritizes these attributes in order:
