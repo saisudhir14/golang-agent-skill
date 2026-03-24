@@ -833,8 +833,7 @@ slog.Info("user created", "id", userID, "email", email)
 slog.Error("request failed", "err", err, "method", r.Method)
 
 // With context
-logger := slog.With("service", "auth", "version", "1.0")
-logger.Info("starting")
+slog.With("service", "auth", "version", "1.0").Info("starting")
 
 // JSON output for production
 handler := slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
