@@ -30,9 +30,11 @@ go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
 
 ## Recommended Configuration
 
-Place `.golangci.yml` at the project root:
+Place `.golangci.yml` at the project root. This uses the golangci-lint v2 config format:
 
 ```yaml
+version: "2"
+
 run:
   timeout: 5m
   go: "1.25"
@@ -41,12 +43,10 @@ linters:
   enable:
     - errcheck       # unchecked errors
     - govet          # go vet checks
-    - staticcheck    # comprehensive static analysis
+    - staticcheck    # comprehensive static analysis (includes gosimple)
     - revive         # flexible linter, replaces golint
-    - gosimple       # simplification suggestions
     - ineffassign    # unused assignments
     - unused         # unused code
-    - goimports      # import formatting and grouping
     - misspell       # spelling in comments and strings
     - unconvert      # unnecessary type conversions
     - gocritic       # opinionated style and performance checks
@@ -56,62 +56,66 @@ linters:
     - nilerr         # returning nil when err is not nil
     - bodyclose      # unclosed HTTP response bodies
     - prealloc       # slice preallocation
-
-linters-settings:
-  revive:
+  settings:
+    revive:
+      rules:
+        - name: exported
+          arguments:
+            - "checkPrivateReceivers"
+        - name: blank-imports
+        - name: context-as-argument
+        - name: context-keys-type
+        - name: error-return
+        - name: error-strings
+        - name: error-naming
+        - name: increment-decrement
+        - name: var-naming
+        - name: package-comments
+        - name: range
+        - name: receiver-naming
+        - name: indent-error-flow
+        - name: empty-block
+        - name: superfluous-else
+        - name: unreachable-code
+        - name: redefines-builtin-id
+    gocritic:
+      enabled-tags:
+        - diagnostic
+        - style
+        - performance
+    errcheck:
+      check-type-assertions: true
+      check-blank: true
+    govet:
+      enable-all: true
+  exclusions:
     rules:
-      - name: exported
-        arguments:
-          - "checkPrivateReceivers"
-      - name: blank-imports
-      - name: context-as-argument
-      - name: context-keys-type
-      - name: error-return
-      - name: error-strings
-      - name: error-naming
-      - name: increment-decrement
-      - name: var-naming
-      - name: package-comments
-      - name: range
-      - name: receiver-naming
-      - name: indent-error-flow
-      - name: empty-block
-      - name: superfluous-else
-      - name: unreachable-code
-      - name: redefines-builtin-id
+      # Allow unused parameters in interface implementations
+      - linters:
+          - revive
+        text: "unused-parameter"
+      # Test files can use dot imports
+      - path: _test\.go
+        linters:
+          - revive
+        text: "dot-imports"
 
-  gocritic:
-    enabled-tags:
-      - diagnostic
-      - style
-      - performance
-
-  errcheck:
-    check-type-assertions: true
-    check-blank: true
-
-  govet:
-    enable-all: true
-
-  goimports:
-    local-prefixes: yourcompany.com
+formatters:
+  enable:
+    - goimports      # import formatting and grouping
+  settings:
+    goimports:
+      local-prefixes:
+        - yourcompany.com
 
 issues:
   max-issues-per-linter: 0
   max-same-issues: 0
-  exclude-rules:
-    # Allow unused parameters in interface implementations
-    - linters:
-        - revive
-      text: "unused-parameter"
-    # Test files can use dot imports
-    - path: _test\.go
-      linters:
-        - revive
-      text: "dot-imports"
 ```
 
-Update `local-prefixes` under `goimports` to match your module path.
+Update `local-prefixes` under `formatters.settings.goimports` to match your module path.
+
+Note: this config uses golangci-lint v2 format (`version: "2"`). If you are on golangci-lint v1, run `golangci-lint migrate` to convert, or remove the `version` line and move `formatters` back into `linters`.
 
 ## Makefile Integration
 
