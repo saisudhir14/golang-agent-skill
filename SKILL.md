@@ -47,7 +47,7 @@ metadata:
 
 Production patterns from Google, Uber, and the Go team. Updated for Go 1.25.
 
-> For deep dives, see focused sub-skills in `skills/` and detailed references in `references/`.
+> Sub-skills: `skills/go-error-handling`, `skills/go-concurrency`, `skills/go-testing`, `skills/go-performance`, `skills/go-code-review`, `skills/go-linting`, `skills/go-project-layout`, `skills/go-security`. Deep-dive references in `references/`.
 
 ## Core Principles
 
@@ -308,6 +308,45 @@ handler := slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.Level
 | Use result before error check | Always check `err` first (Go 1.25 enforces) |
 | Map iteration order | Sort keys with `slices.Sorted(maps.Keys(m))` |
 | Slice append shared backing | Full slice expression `a[:2:2]` |
+
+---
+
+## Linting
+
+> Full guide: `skills/go-linting/SKILL.md`
+
+- **Use golangci-lint** as the standard linter aggregator
+- **Recommended linters**: errcheck, govet, staticcheck, revive, gosimple, goimports, errorlint, bodyclose
+- **Add as a tool dependency** (Go 1.24+): `go get -tool github.com/golangci/golangci-lint/cmd/golangci-lint`
+- **Run in CI**: use `golangci/golangci-lint-action` for GitHub Actions
+- **Suppress sparingly**: prefer fixing over `//nolint` comments
+
+---
+
+## Project Layout
+
+> Full guide: `skills/go-project-layout/SKILL.md`
+
+- **`cmd/`**: one subdirectory per executable, keep `main.go` thin
+- **`internal/`**: private packages, enforced by the Go toolchain
+- **Avoid `pkg/`, `src/`, `models/`, `utils/`**: name packages by purpose
+- **Flat is fine**: small projects should not have deep directory trees
+- **Dockerfile**: multi-stage build, `CGO_ENABLED=0`, distroless base image
+
+---
+
+## Security
+
+> Full guide: `skills/go-security/SKILL.md`
+
+- **Parameterized SQL queries**: never interpolate user input
+- **`os.Root`** (Go 1.24+): scoped file access preventing path traversal
+- **Validate at boundaries**: decode into typed structs, validate fields
+- **Never hardcode or log secrets**: use `Secret` type with redacted `String()`
+- **Standard crypto only**: `crypto/rand` for random bytes, `bcrypt` for passwords
+- **HTTP timeouts**: always set `ReadTimeout`, `WriteTimeout`, `IdleTimeout`
+- **`govulncheck`**: scan dependencies for known vulnerabilities
+- **`go test -race`**: always run with the race detector in CI
 
 ---
 
