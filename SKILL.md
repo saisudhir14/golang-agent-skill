@@ -1,8 +1,8 @@
 ---
 name: golang
 description: >-
-  Use when writing, reviewing, or refactoring Go code. Provides battle-tested
-  best practices for production Go covering error handling, concurrency, naming,
+  Use when writing, reviewing, or refactoring Go code. Provides production
+  best practices for Go covering error handling, concurrency, naming,
   testing, performance, generics, iterators, and common pitfalls. Distilled from
   Google Go Style Guide, Uber Go Style Guide, Effective Go, and Go Code Review
   Comments. Updated for Go 1.25.
@@ -45,7 +45,7 @@ metadata:
 
 # Go Best Practices
 
-Battle-tested patterns from Google, Uber, and the Go team for production Go (1.25).
+Production patterns from Google, Uber, and the Go team. Updated for Go 1.25.
 
 > For deep dives, see focused sub-skills in `skills/` and detailed references in `references/`.
 
@@ -195,7 +195,9 @@ go install tool                                # install to GOBIN
 func Filter[T any](s []T, pred func(T) bool) []T {
     result := make([]T, 0, len(s))
     for _, v := range s {
-        if pred(v) { result = append(result, v) }
+        if pred(v) {
+            result = append(result, v)
+        }
     }
     return result
 }
@@ -211,11 +213,16 @@ Range over functions for custom iterators:
 func Backward[T any](s []T) func(yield func(int, T) bool) {
     return func(yield func(int, T) bool) {
         for i := len(s) - 1; i >= 0; i-- {
-            if !yield(i, s[i]) { return }
+            if !yield(i, s[i]) {
+                return
+            }
         }
     }
 }
-for i, v := range Backward(items) { fmt.Println(i, v) }
+
+for i, v := range Backward(items) {
+    fmt.Println(i, v)
+}
 ```
 
 String/bytes iterators (Go 1.24+): `strings.Lines`, `strings.SplitSeq`, `strings.SplitAfterSeq`

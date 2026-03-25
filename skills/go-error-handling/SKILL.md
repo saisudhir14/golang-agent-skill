@@ -75,21 +75,26 @@ return fmt.Errorf("new store: %w", err)
 Use `errors.Join` when multiple operations can fail independently.
 
 ```go
+var (
+    ErrNameRequired  = errors.New("name required")
+    ErrEmailRequired = errors.New("email required")
+)
+
 func validateUser(u User) error {
     var errs []error
     if u.Name == "" {
-        errs = append(errs, errors.New("name required"))
+        errs = append(errs, ErrNameRequired)
     }
     if u.Email == "" {
-        errs = append(errs, errors.New("email required"))
+        errs = append(errs, ErrEmailRequired)
     }
     return errors.Join(errs...)
 }
 
-// Checking joined errors
+// errors.Is works on joined errors
 if err := validateUser(u); err != nil {
     if errors.Is(err, ErrNameRequired) {
-        // handles even when joined with other errors
+        // matches even when joined with other errors
     }
 }
 ```

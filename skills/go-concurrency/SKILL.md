@@ -134,29 +134,28 @@ func (c *Counter) Value() int64 { return c.value.Load() }
 
 The `sync.Map` implementation was significantly improved in Go 1.24. Modifications of disjoint sets of keys are much less likely to contend on larger maps, and there is no longer any ramp-up time required to achieve low-contention loads.
 
-## Graceful Shutdown Pattern
+## Context Cancellation
 
-Production servers need graceful shutdown to drain connections.
+Always select on `ctx.Done()` in long-running goroutines to allow clean cancellation.
 
 ```go
-func main() {
-    srv := &http.Server{Addr: ":8080", Handler: handler}
+func longOperation(ctx context.Context) error {
+    resultCh := make(chan result, 1)
 
     go func() {
-        if err := srv.ListenAndServe(); err != http.ErrServerClosed {
-            slog.Error("server error", "err", err)
-        }
+        // Note: if ctx is canceled, this goroutine still runs to completion
+        // and sends to the buffered channel (then gets GC'd).
+        // Pass ctx into the work function if it supports cancellation.
+        resultCh <- expensiveWork()
     }()
 
-    quit := make(chan os.Signal, 1)
-    signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
-    <-quit
-
-    ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
-    defer cancel()
-
-    if err := srv.Shutdown(ctx); err != nil {
-        slog.Error("shutdown error", "err", err)
+    select {
+    case <-ctx.Done():
+        return ctx.Err()
+    case r := <-resultCh:
+        return r.err
     }
 }
 ```
+
+For graceful server shutdown patterns, see `references/patterns.md`.

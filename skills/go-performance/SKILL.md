@@ -1,9 +1,10 @@
 ---
 name: go-performance
 description: >-
-  Use when optimizing Go code performance. Covers string operations, memory
-  allocation, preallocating slices and maps, strings.Builder, strconv,
-  container-aware GOMAXPROCS, and runtime considerations for Go 1.25.
+  Use when writing, reviewing, or optimizing Go code for performance. Covers
+  string operations, memory allocation, preallocating slices and maps,
+  strings.Builder, strconv, container-aware GOMAXPROCS, and runtime
+  considerations for Go 1.25.
 version: "2.0.0"
 license: MIT
 metadata:

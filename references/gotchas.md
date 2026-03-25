@@ -30,23 +30,27 @@ for _, v := range values {
 
 ## Defer Argument Evaluation
 
-Defer evaluates arguments immediately, not when deferred function runs.
+Defer evaluates arguments when the defer statement executes, not when the deferred function runs.
 
 ```go
-// Prints: 4 3 2 1 0 (arguments evaluated at defer time)
+// Prints: 4 3 2 1 0 (i is evaluated at each defer statement, LIFO execution)
 for i := 0; i < 5; i++ {
     defer fmt.Println(i)
 }
+```
 
-// Gotcha with file handles
-for _, f := range files {
-    defer f.Close() // All defer the same f!
-}
+Note on defer in loops: prior to Go 1.22, `for _, f := range files { defer f.Close() }` was a bug because `f` was shared across iterations. In Go 1.22+, loop variables are per-iteration, so this is safe. However, deferring inside loops still delays cleanup until the enclosing function returns. Prefer closing resources within each iteration when possible:
 
-// Fix: capture in closure or use explicit scope
-for _, f := range files {
-    f := f
-    defer f.Close()
+```go
+for _, name := range files {
+    func() {
+        f, err := os.Open(name)
+        if err != nil {
+            return
+        }
+        defer f.Close()
+        process(f)
+    }()
 }
 ```
 

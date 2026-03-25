@@ -1,6 +1,6 @@
 # golang-agent-skill
 
-Battle-tested Go best practices for AI coding agents. Distilled from Google Go Style Guide, Uber Go Style Guide, Effective Go, and Go Code Review Comments. Updated for Go 1.25.
+Go best practices for AI coding agents. Distilled from Google Go Style Guide, Uber Go Style Guide, Effective Go, and Go Code Review Comments. Updated for Go 1.25.
 
 **Install:** [skills.sh/saisudhir14/golang-agent-skill](https://skills.sh/saisudhir14/golang-agent-skill/golang)
 
@@ -77,6 +77,7 @@ Works with all SKILL.md-compatible agents:
 │   ├── performance.md                # Extended performance patterns
 │   ├── patterns.md                   # Extended Go patterns
 │   └── gotchas.md                    # Common pitfalls reference
+├── LICENSE
 └── README.md
 ```
 

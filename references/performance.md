@@ -2,14 +2,13 @@
 
 Extended performance optimization patterns for Go.
 
-## String Operations Benchmark Comparison
+## String Operations
+
+`strconv` avoids the reflection and formatting overhead of `fmt`. Run your own benchmarks to confirm, but `strconv.Itoa` is typically several times faster than `fmt.Sprintf` for integer-to-string conversion and allocates less.
 
 ```go
-// BenchmarkFmtSprintf-8    10000000    120 ns/op    16 B/op    2 allocs/op
-s := fmt.Sprintf("%d", n)
-
-// BenchmarkStrconvItoa-8    50000000    28 ns/op     7 B/op    1 allocs/op
-s := strconv.Itoa(n)
+s := fmt.Sprintf("%d", n)  // slower: format parsing, interface boxing
+s := strconv.Itoa(n)       // faster: direct conversion, fewer allocations
 ```
 
 ## Efficient Map Operations
@@ -49,11 +48,9 @@ func trimSlice(s []Item) []Item {
 
 ## strings.Builder vs Concatenation
 
-```go
-// Benchmark: 1000 concatenations
-// BenchmarkConcat-8        1000    5200000 ns/op
-// BenchmarkBuilder-8    1000000       1200 ns/op
+String concatenation with `+=` allocates a new string on each append. `strings.Builder` writes to a growable buffer and allocates once.
 
+```go
 var b strings.Builder
 b.Grow(estimatedSize)
 for _, s := range parts {

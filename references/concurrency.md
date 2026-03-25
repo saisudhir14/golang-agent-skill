@@ -38,7 +38,6 @@ func FanOutFanIn(ctx context.Context, urls []string) ([]Result, error) {
     results := make([]Result, len(urls))
 
     for i, url := range urls {
-        i, url := i, url
         g.Go(func() error {
             r, err := fetch(ctx, url)
             if err != nil {
@@ -80,6 +79,9 @@ func longOperation(ctx context.Context) error {
     resultCh := make(chan result, 1)
 
     go func() {
+        // On context cancellation, this goroutine still runs to completion
+        // and sends to the buffered channel (then gets GC'd).
+        // Pass ctx into expensiveWork if it supports cancellation.
         resultCh <- expensiveWork()
     }()
 
@@ -87,10 +89,7 @@ func longOperation(ctx context.Context) error {
     case <-ctx.Done():
         return ctx.Err()
     case r := <-resultCh:
-        if r.err != nil {
-            return r.err
-        }
-        return nil
+        return r.err
     }
 }
 ```

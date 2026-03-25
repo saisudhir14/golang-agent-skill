@@ -38,11 +38,15 @@ func NewServer(addr string, opts ...Option) *Server {
     return s
 }
 
-srv := NewServer("localhost:8080",
-    WithTimeout(60*time.Second),
-    WithLogger(logger),
-    WithTLS(tlsConfig),
-)
+// Usage
+func main() {
+    srv := NewServer("localhost:8080",
+        WithTimeout(60*time.Second),
+        WithLogger(logger),
+        WithTLS(tlsConfig),
+    )
+    _ = srv
+}
 ```
 
 ## Interface Compliance Verification

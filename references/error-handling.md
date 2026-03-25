@@ -48,15 +48,13 @@ type ValidationError struct {
 }
 
 func (e *ValidationError) Error() string {
-    return fmt.Sprintf("validation failed on %s: %s (got %v)", e.Field, e.Message, e.Value)
+    return fmt.Sprintf("%s: %s (got %v)", e.Field, e.Message, e.Value)
 }
 
-func (e *ValidationError) Is(target error) bool {
-    t, ok := target.(*ValidationError)
-    if !ok {
-        return false
-    }
-    return t.Field == e.Field
+// Use errors.As to extract the typed error from callers
+var ve *ValidationError
+if errors.As(err, &ve) {
+    fmt.Printf("invalid field: %s\n", ve.Field)
 }
 ```
 
@@ -81,7 +79,7 @@ func (s *UserService) GetUser(ctx context.Context, id string) (*User, error) {
     return user, nil
 }
 
-// HTTP handler: use %v to hide internals from API consumers
+// HTTP handler: log internal details, return generic messages to clients
 func (h *Handler) GetUser(w http.ResponseWriter, r *http.Request) {
     user, err := h.service.GetUser(r.Context(), chi.URLParam(r, "id"))
     if err != nil {
@@ -89,7 +87,7 @@ func (h *Handler) GetUser(w http.ResponseWriter, r *http.Request) {
             http.Error(w, "user not found", http.StatusNotFound)
             return
         }
-        slog.Error("get user failed", "err", err)
+        slog.Error("get user", "err", err)
         http.Error(w, "internal error", http.StatusInternalServerError)
         return
     }
