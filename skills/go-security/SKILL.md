@@ -103,7 +103,7 @@ Never hardcode secrets. Never log them.
 
 ```go
 // Wrong: secret in source code
-const apiKey = "sk-abc123"
+const apiKey = "do-not-hardcode-secrets"
 
 // Wrong: secret in error message or log
 slog.Info("connecting", "dsn", os.Getenv("DATABASE_URL"))
