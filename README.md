@@ -1,11 +1,11 @@
-# golang-agent-skill
+# claude-skills
 
 Go best practices for AI coding agents. Distilled from Google Go Style Guide, Uber Go Style Guide, Effective Go, and Go Code Review Comments. Updated for Go 1.25.
 
-**Install:** [skills.sh/saisudhir14/golang-agent-skill](https://skills.sh/saisudhir14/golang-agent-skill/golang)
+**Install:** [skills.sh/saisudhir14/claude-skills](https://skills.sh/saisudhir14/claude-skills/golang)
 
 ```bash
-npx skills add saisudhir14/golang-agent-skill
+npx skills add saisudhir14/claude-skills
 ```
 
 ## Skills
